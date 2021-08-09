@@ -1572,17 +1572,20 @@ namespace Array {
     /// function `f` and seperated with the string `sep`.
     ///
     @Time(time(f) * length(a)) @Space(space(f) * length(a))
-    pub def formatWith(f: a -> String, sep: String, a: Array[a]): String & Impure =
-        let sb = StringBuilder.new();
-        let step = (x,i) ->
-            if (i == 0)
-                StringBuilder.appendString!(sb, f(x))
-            else {
-                StringBuilder.appendString!(sb, sep);
-                StringBuilder.appendString!(sb, f(x))
-            };
-        foreachWithIndex(step, a);
-        StringBuilder.toString(sb)
+    pub def formatWith(f: a -> String, sep: String, a: Array[a]): String =
+        let aux = () -> {
+            let sb = StringBuilder.new();
+            let step = (x,i) ->
+                if (i == 0)
+                    StringBuilder.appendString!(sb, f(x))
+                else {
+                    StringBuilder.appendString!(sb, sep);
+                    StringBuilder.appendString!(sb, f(x))
+                };
+            foreachWithIndex(step, a);
+            StringBuilder.toString(sb)
+        };
+        aux() as & Pure
 
     ///
     /// Returns a sorted copy of array `a`, where the elements are ordered from low to high according to
