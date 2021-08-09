@@ -32,6 +32,36 @@ pub lawless class Foldable[t : Type -> Type] {
     pub def foldRight(f: (a, b) -> b & e, s: b, t: t[a]): b & e
 
     ///
+    /// Render the collection `xs` as a String. Elements are rendered with the
+    /// function `f` and seperated with the string `sep`.
+    ///
+    pub def formatWith(f: a -> String, sep: String, xs: t[a]): String =
+        let aux = () -> {
+            Foldable.foldLeft((acc, x) -> {
+                StringBuilder.appendString!(acc, sep);
+                StringBuilder.appendString!(acc, f(x));
+                acc
+            }, StringBuilder.new(), xs) |>
+            StringBuilder.toString |>
+            String.drop(String.length(sep))
+        };
+        aux() as & Pure
+
+    ///
+    /// Render the collection `xs` as a String. Elements are rendered with the
+    /// function `ToString.toString` and seperated with the string `sep`.
+    ///
+    pub def joinWith(sep: String, xs: t[a]): String with ToString[a] =
+        Foldable.formatWith(ToString.toString, sep, xs)
+
+    ///
+    /// Render the collection `xs` as a String. Elements are rendered with the
+    /// function `ToString.toString` and seperated with the string ", ".
+    ///
+    pub def join(xs: t[a]): String with ToString[a] =
+        Foldable.joinWith(", ", xs)
+
+    ///
     /// Returns the number of elements in `t` that satisfy the predicate `f`.
     ///
     pub def count(f: a -> Bool, t: t[a]): Int32 =
